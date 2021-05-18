@@ -41,7 +41,6 @@ public class AdminInitDataControllers {
   BrandService brandService;
 
   @PostMapping
-  @PreAuthorize(value = "hasRole('ADMIN')")
   public ResponseEntity<ApiResponse> initData() {
 
     if (!roleRepository.findByName(RoleName.ROLE_ADMIN).isPresent()) {
