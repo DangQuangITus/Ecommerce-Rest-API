@@ -38,7 +38,7 @@ public class CustomerOrderControllers {
 
 
   @PostMapping("/add")
-  @PreAuthorize(value = "hasRole('USER')")
+  @PreAuthorize(value = "hasAnyRole('USER','ADMIN')")
   public ResponseEntity<ApiResponse> placeOrder(@Valid @RequestBody OrderDto orderDto,
       @CurrentUser UserPrincipal userPrincipal) {
 

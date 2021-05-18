@@ -86,10 +86,10 @@ public class ProductService {
       if (StringUtils.isNotEmpty(productDto.getName())) {
         listParams.add(builder.like(root.get("name"), String.format("%%%s%%", productDto.getName())));
       }
-      if (productDto.getBrandId() > 0) {
+      if (productDto.getBrandId() != null && productDto.getBrandId() > 0) {
         listParams.add(builder.equal(root.get("brandId"), productDto.getBrandId()));
       }
-      if (productDto.getCategoryId() > 0) {
+      if (productDto.getCategoryId() != null && productDto.getCategoryId() > 0) {
         listParams.add(builder.equal(root.get("categoryId"), productDto.getCategoryId()));
       }
       if (StringUtils.isNotEmpty(productDto.getColor())) {
