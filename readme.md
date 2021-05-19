@@ -80,7 +80,7 @@ Handle JWT token and Current User
 }'
 
 #### API for admin add product
-> curl --location --request POST 'http://localhost:9000/api/admin/product/add' \
+> curl --location --request POST 'http://localhost:9001/api/admin/product/add' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTMiLCJpYXQiOjE2MjEzMjI5NDMsImV4cCI6MTYyMTkyNzc0M30.PDO0cuHZk4horcgOV1d29GM8WdfqJRYKZFE817K6vmk' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -94,7 +94,7 @@ Handle JWT token and Current User
 
 
 #### API for admin update/delete product
-> curl --location --request POST 'http://localhost:9000/api/admin/product/update/1' \
+> curl --location --request POST 'http://localhost:9001/api/admin/product/update/1' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzYwMTA2LCJleHAiOjE2MjE5NjQ5MDZ9.Od0gvDVQZTpQXnRhIcg7XvssM38sa3ZlXuCpJrVOv1I' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -107,7 +107,7 @@ Handle JWT token and Current User
 }'
 
 #### API for customer get all product
-> curl --location --request GET 'http://localhost:9000/api/product' \
+> curl --location --request GET 'http://localhost:9001/api/product' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -120,7 +120,7 @@ Handle JWT token and Current User
 }'
 
 #### API for customer search product
->curl --location --request GET 'http://localhost:9000/api/product/search' \
+>curl --location --request GET 'http://localhost:9001/api/product/search' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -135,7 +135,7 @@ Handle JWT token and Current User
 }'
 #### API for customer order cart
 
->curl --location --request POST 'http://localhost:9000/api/order/add' \
+>curl --location --request POST 'http://localhost:9001/api/order/add' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
