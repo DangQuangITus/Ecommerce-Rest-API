@@ -1,26 +1,31 @@
-# NAB E-Commerce Doc
+# NAB E-Commerce REST API Doc.
 NAB Ecommerce Backend APIs
 
 Back-end: https://github.com/DangQuangITus/Ecommerce-Rest-API
 
 #### Download resource:
-1. ```git clone https://github.com/DangQuangITus/Ecommerce-Rest-API.git```
-2. ```cd Ecommerce-Rest-API/```
-3. ```git checkout develop```
+> <b>git clone</b> https://github.com/DangQuangITus/Ecommerce-Rest-API.git.
 
-- This is a Maven Project. Ensure, Maven is installed on your system.
-- It is Recommended that you use Linux Based OS.
+> <b>cd</b> ```Ecommerce-Rest-API/```
+
+> <b> git checkout develop </b>
+
+<p>This is a Maven Project. Ensure, Maven is installed on your system.</p>
+<p>It is Recommended that you use Linux Based OS.</p>
+
 
 ### Database Design
-https://dbdiagram.io/d/60a38f43b29a09603d155dc4
+> https://dbdiagram.io/d/60a38f43b29a09603d155dc4
 
-### Basic System Design
-https://cloud.smartdraw.com/share.aspx/?pubDocShare=4496FAA86E66F0C49B16702315DD1438C5E
+### Basic Analysis & System Design
+> https://cloud.smartdraw.com/share.aspx/?pubDocShare=4496FAA86E66F0C49B16702315DD1438C5E
 
 ### How to run in local
-1. Go to parent folder including pom.xml file
-2. Run command line 
-   ```mvn clean install -DskipTests && java -jar target/ecommerce-0.0.1-SNAPSHOT.jar --spring.config.location=./conf/application.yml```
+<p>1. Go to parent folder including pom.xml file </p>
+<p>2. Run command line </p> 
+
+> mvn clean install -DskipTests && java -jar target/ecommerce-0.0.1-SNAPSHOT.jar --spring.config.location=./conf/application.yml
+
 
 ### The MEAN Stack
 - Knowledge in Core Java 
@@ -50,17 +55,21 @@ Handle specials exception
 Database entities
 
 #### payload
-authen dto, api request - response
+Authen dto, api request - response
 
 #### security
 Handle JWT token and Current User
 
-### Curl for test API
+### Example: Curl for test API
 #### Init data
+<p>Insert example data, admin user account, product, category...</p>
+
 > curl --location --request POST 'http://localhost:9001/api/admin/init' \
    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTMiLCJpYXQiOjE2MjEzMDkwODYsImV4cCI6MTYyMTkxMzg4Nn0.5-G5yRTAoNWBRMlNkmVFd8OZcob4hHds7KPoUHmNWCY'
 
 #### Register new user
+<p>Signup a new account</p>
+
 > curl --location --request POST 'http://localhost:9001/api/auth/signup' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -72,6 +81,8 @@ Handle JWT token and Current User
 "phoneNo": "0396424816" }'
 
 #### Login for get token
+<p>Login by admin user</p>
+
 > curl --location --request POST 'http://localhost:9001/api/auth/signin' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -80,6 +91,8 @@ Handle JWT token and Current User
 }'
 
 #### API for admin add product
+<p>API for admin to add new product </p>
+
 > curl --location --request POST 'http://localhost:9001/api/admin/product/add' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTMiLCJpYXQiOjE2MjEzMjI5NDMsImV4cCI6MTYyMTkyNzc0M30.PDO0cuHZk4horcgOV1d29GM8WdfqJRYKZFE817K6vmk' \
 --header 'Content-Type: application/json' \
