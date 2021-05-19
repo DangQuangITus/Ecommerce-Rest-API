@@ -1,7 +1,9 @@
-package com.nab.ecommerce.models;
+package com.nab.ecommerce.models.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nab.ecommerce.dto.product.ProductDto;
+import com.nab.ecommerce.models.Brand;
+import com.nab.ecommerce.models.Category;
 import com.nab.ecommerce.models.audit.UserDateAudit;
 import java.util.List;
 import javax.persistence.Entity;
@@ -12,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -26,8 +29,13 @@ public class Product extends UserDateAudit {
   private @NotNull String name;
   private String imageURL;
   private @NotNull double price;
+  private Long stock;
   private @NotNull String description;
   private @NotNull String color;
+
+  @OneToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "product_status_id", nullable = false)
+  private ProductStatus productStatus;
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -40,15 +48,13 @@ public class Product extends UserDateAudit {
   @JoinColumn(name = "brand_id", nullable = false)
   Brand brand;
 
-
-  @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
-  private List<Cart> carts;
-
   public Product(ProductDto productDto, Category category, Brand brand) {
+
     this.name = productDto.getName();
     this.description = productDto.getDescription();
+    this.stock = productDto.getStock();
     this.price = productDto.getPrice();
+    this.color = productDto.getColor();
     this.category = category;
     this.brand = brand;
   }
@@ -57,11 +63,14 @@ public class Product extends UserDateAudit {
   public Product(ProductDto productDto, Category category) {
     this.name = productDto.getName();
     this.description = productDto.getDescription();
+    this.color = productDto.getColor();
     this.price = productDto.getPrice();
     this.category = category;
   }
 
-  public Product(String name, String imageURL, double price, String description, String color, Category category) {
+  public Product(String name, String imageURL, double price, String description,
+      String color, Category category, Brand brand) {
+
     super();
     this.name = name;
     this.imageURL = imageURL;
@@ -69,9 +78,30 @@ public class Product extends UserDateAudit {
     this.description = description;
     this.color = color;
     this.category = category;
+    this.brand = brand;
   }
 
   public Product() {
+  }
+
+  public void setStock(Long stock) {
+    this.stock = stock;
+  }
+
+  public ProductStatus getProductStatus() {
+    return productStatus;
+  }
+
+  public void setProductStatus(ProductStatus productStatus) {
+    this.productStatus = productStatus;
+  }
+
+  public long getStock() {
+    return stock;
+  }
+
+  public void setStock(long stock) {
+    this.stock = stock;
   }
 
   public Integer getId() {
@@ -120,14 +150,6 @@ public class Product extends UserDateAudit {
 
   public void setColor(String color) {
     this.color = color;
-  }
-
-  public List<Cart> getCarts() {
-    return carts;
-  }
-
-  public void setCarts(List<Cart> carts) {
-    this.carts = carts;
   }
 
   public Category getCategory() {

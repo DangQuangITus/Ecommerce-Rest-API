@@ -1,7 +1,7 @@
 package com.nab.ecommerce.models.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nab.ecommerce.models.Order;
+import com.nab.ecommerce.models.order.Order;
 import com.nab.ecommerce.models.audit.DateAudit;
 import java.util.List;
 import javax.persistence.Entity;
@@ -37,6 +37,9 @@ public class User extends DateAudit {
   @Size(max = 40)
   private String username;
 
+  @Size(max = 100)
+  private String fullName;
+
   @Size(max = 11)
   private String phone;
 
@@ -59,6 +62,14 @@ public class User extends DateAudit {
     this.username = username;
     this.email = email;
     this.orders = orders;
+  }
+
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
   }
 
   public String getPhone() {

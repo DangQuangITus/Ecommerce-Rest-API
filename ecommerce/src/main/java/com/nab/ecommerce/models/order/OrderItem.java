@@ -1,6 +1,7 @@
-package com.nab.ecommerce.models;
+package com.nab.ecommerce.models.order;
 
 import com.nab.ecommerce.models.audit.DateAudit;
+import com.nab.ecommerce.models.product.Product;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,13 +14,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "orderitems")
+@Table(name = "order_items")
 public class OrderItem extends DateAudit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-
 
   @Column(name = "quantity")
   private @NotNull int quantity;

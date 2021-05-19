@@ -1,8 +1,7 @@
-package com.nab.ecommerce.models;
+package com.nab.ecommerce.models.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nab.ecommerce.dto.order.PlaceOrderDto;
-import com.nab.ecommerce.models.audit.DateAudit;
+import com.nab.ecommerce.dto.order.OrderDto;
 import com.nab.ecommerce.models.audit.UserDateAudit;
 import com.nab.ecommerce.models.user.User;
 import java.util.List;
@@ -28,9 +27,6 @@ public class Order extends UserDateAudit {
   @Column(name = "total_price")
   private Double totalPrice;
 
-  @Column(name = "session_id")
-  private String sessionId;
-
   @Column(name = "address")
   private String address;
 
@@ -45,9 +41,11 @@ public class Order extends UserDateAudit {
   public Order() {
   }
 
-  public Order(PlaceOrderDto orderDto, User user) {
+
+  public Order(OrderDto orderDto, User user) {
     this.user = user;
-    this.totalPrice = orderDto.getTotalPrice();
+    this.address = user.getAddress();
+    this.totalPrice = orderDto.getTotalPrices();
   }
 
   public List<OrderItem> getOrderItems() {
@@ -80,14 +78,6 @@ public class Order extends UserDateAudit {
 
   public void setTotalPrice(Double totalPrice) {
     this.totalPrice = totalPrice;
-  }
-
-  public String getSessionId() {
-    return sessionId;
-  }
-
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
   }
 
   public User getUser() {

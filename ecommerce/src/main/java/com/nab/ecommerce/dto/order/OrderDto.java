@@ -1,6 +1,7 @@
 package com.nab.ecommerce.dto.order;
 
-import com.nab.ecommerce.models.Order;
+import com.nab.ecommerce.models.order.Order;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 
 public class OrderDto {
@@ -11,6 +12,7 @@ public class OrderDto {
   private @NotNull String email;
   private @NotNull String phone;
   private @NotNull String address;
+  private @NotNull List<OrderItemsDto> orderItemsDtos;
 
 
   public OrderDto() {
@@ -19,6 +21,23 @@ public class OrderDto {
   public OrderDto(Order order) {
     this.setId(order.getId());
     this.setUserId(order.getCreatedBy());
+  }
+
+  public List<OrderItemsDto> getOrderItemsDtos() {
+    return orderItemsDtos;
+  }
+
+  public void setOrderItemsDtos(List<OrderItemsDto> orderItemsDtos) {
+    this.orderItemsDtos = orderItemsDtos;
+  }
+
+  public double getTotalPrices() {
+    double total = 0;
+    for (OrderItemsDto item : orderItemsDtos) {
+      total += item.getPrice() * item.getQuantity();
+    }
+
+    return total;
   }
 
   public Integer getId() {

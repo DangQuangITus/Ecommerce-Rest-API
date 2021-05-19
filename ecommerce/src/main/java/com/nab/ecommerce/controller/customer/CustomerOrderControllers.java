@@ -37,12 +37,10 @@ public class CustomerOrderControllers {
   private OrderService orderService;
 
 
-  @PostMapping("/add")
-  @PreAuthorize(value = "hasAnyRole('USER','ADMIN')")
-  public ResponseEntity<ApiResponse> placeOrder(@Valid @RequestBody OrderDto orderDto,
-      @CurrentUser UserPrincipal userPrincipal) {
+  @PostMapping("/create")
+  public ResponseEntity<ApiResponse> placeOrder(@Valid @RequestBody OrderDto orderDto, @CurrentUser UserPrincipal user) {
 
-    orderService.placeOrder(userPrincipal, orderDto);
+    orderService.placeOrder(orderDto, user);
     return new ResponseEntity<>(new ApiResponse(true, "Order has been placed"), HttpStatus.CREATED);
   }
 

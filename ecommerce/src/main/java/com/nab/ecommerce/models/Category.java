@@ -1,6 +1,7 @@
 package com.nab.ecommerce.models;
 
 import com.nab.ecommerce.models.audit.DateAudit;
+import com.nab.ecommerce.models.product.Product;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

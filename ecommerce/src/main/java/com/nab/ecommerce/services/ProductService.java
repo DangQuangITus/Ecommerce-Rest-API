@@ -6,10 +6,12 @@ import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;
 import com.nab.ecommerce.models.Category;
-import com.nab.ecommerce.models.Product;
+import com.nab.ecommerce.models.product.Product;
+import com.nab.ecommerce.models.product.ProductStatus;
 import com.nab.ecommerce.payload.request.SearchRequest;
 import com.nab.ecommerce.payload.response.PagedResponse;
 import com.nab.ecommerce.repositories.ProductRepository;
+import com.nab.ecommerce.repositories.ProductStatusRepository;
 import com.nab.ecommerce.security.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,18 +41,23 @@ public class ProductService {
 
   @Autowired
   private ProductRepository productRepository;
+  @Autowired
+  private ProductStatusRepository productStatusRepository;
   @PersistenceContext
   private EntityManager em;
+  @Autowired
+  CategoryService categoryService;
+  @Autowired
+  BrandService brandService;
 
-
-  public PagedResponse<ProductDto> listProducts(UserPrincipal user, ProductDto productDto) {
+  public PagedResponse<ProductDto> listProducts(ProductDto productDto) {
 
     try {
 
-      validatePageSize(productDto.searchRequest);
+      validateMetaDataRequest(productDto.metadataRequest);
 
-      Pageable pageable = PageRequest.of(productDto.searchRequest.page, productDto.searchRequest.size,
-          Sort.Direction.fromString(productDto.searchRequest.sort), productDto.searchRequest.sortValue);
+      Pageable pageable = PageRequest.of(productDto.metadataRequest.page, productDto.metadataRequest.size,
+          Sort.Direction.fromString(productDto.metadataRequest.sort), productDto.metadataRequest.sortValue);
 
       Page<Product> products = productRepository.findAll(pageable);
       if (products.getTotalElements() == 0) {
@@ -67,8 +74,11 @@ public class ProductService {
           products.getTotalElements(), products.getTotalPages(), products.isLast());
 
     } catch (BadRequestException ex) {
-      logger.error("list product error");
-      return null;
+      logger.error("Metadata request invalid");
+      return new PagedResponse<>(Collections.emptyList(), 0, 0, 0, 0, false);
+    } catch (Exception ex) {
+      logger.error(String.format("Get all product error, %s", ex.getMessage()));
+      return new PagedResponse<>(Collections.emptyList(), 0, 0, 0, 0, false);
     }
 
   }
@@ -108,26 +118,35 @@ public class ProductService {
     }
   }
 
-  public PagedResponse<ProductDto> searchProducts(UserPrincipal user, ProductDto productDto) {
+  public PagedResponse<ProductDto> searchProducts(ProductDto productDto) {
 
     try {
 
+      validateMetaDataRequest(productDto.metadataRequest);
+
       CriteriaQuery<Product> query = getParamsFromRequest(productDto);
       TypedQuery<Product> typedQuery = em.createQuery(query);
-      typedQuery.setFirstResult(productDto.searchRequest.page * productDto.searchRequest.size);
-      typedQuery.setMaxResults(productDto.searchRequest.size);
+      typedQuery.setFirstResult(productDto.metadataRequest.page * productDto.metadataRequest.size);
+      typedQuery.setMaxResults(productDto.metadataRequest.size);
       List<Product> products = typedQuery.getResultList();
+      if (products.size() == 0) {
+        throw new ProductNotExistException("Product not found.");
+      }
 
       List<ProductDto> productDtos = new ArrayList<>();
       for (Product product : products) {
         ProductDto tmp = getDtoFromProduct(product);
         productDtos.add(tmp);
       }
-      return new PagedResponse<>(productDtos, productDto.searchRequest.page, productDto.searchRequest.size,
-          products.size(), products.size() / productDto.searchRequest.size + 1, false);
+
+      return new PagedResponse<>(productDtos, productDto.metadataRequest.page, productDto.metadataRequest.size,
+          products.size(), products.size() / productDto.metadataRequest.size + 1, false);
 
     } catch (BadRequestException ex) {
-      return null;
+      logger.error("Metadata request invalid");
+      return new PagedResponse<>(Collections.emptyList(), 0, 0, 0, 0, false);
+    } catch (ProductNotExistException e) {
+      return new PagedResponse<>(Collections.emptyList(), 0, 0, 0, 0, false);
     }
 
   }
@@ -142,22 +161,41 @@ public class ProductService {
     return product;
   }
 
-  public static Product getProductFromDto(ProductDto productDto, Category category) {
-    Product product = new Product(productDto, category);
-    return product;
-  }
 
-  public void addProduct(ProductDto productDto, Category category, Brand brand) {
+  public Product addProduct(ProductDto productDto, Category category, Brand brand) {
     Product product = getProductFromDto(productDto, category, brand);
-    productRepository.save(product);
+    ProductStatus productStatus = new ProductStatus(product);
+    product.setProductStatus(productStatus);
+    productStatus = productStatusRepository.save(productStatus);
+    product.setProductStatus(productStatus);
+    return productRepository.save(product);
   }
 
-  public void updateProduct(Integer productID, ProductDto productDto, Category category) {
-    Product product = getProductFromDto(productDto, category);
+  public Product updateProduct(Integer productID, ProductDto productDto, Category category, Brand brand) {
+    Product product = getProductFromDto(productDto, category, brand);
     product.setId(productID);
-    productRepository.save(product);
+    ProductStatus productStatus = new ProductStatus(product);
+    productStatus.setProductId(productID);
+    productStatusRepository.save(productStatus);
+    product.setProductStatus(productStatus);
+    return productRepository.save(product);
   }
 
+  public void deleteProduct(Integer productID) {
+
+    try {
+
+      Product product = getProductById(productID);
+      product.setId(productID);
+      product.getProductStatus().setAvailable(false);
+      productRepository.save(product);
+
+    } catch (ProductNotExistException e) {
+      logger.error("Product not found.");
+      throw new ProductNotExistException("Product id is invalid " + productID);
+    }
+
+  }
 
   public Product getProductById(Integer productId) throws ProductNotExistException {
     Optional<Product> optionalProduct = productRepository.findById(productId);
@@ -168,16 +206,40 @@ public class ProductService {
   }
 
 
-  private void validatePageSize(SearchRequest searchRequest) {
-    if (searchRequest.page < 0) {
+  public boolean validateProductDto(ProductDto productDto) {
+
+    Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
+    Optional<Brand> optionalBrand = brandService.readBrand(productDto.getBrandId());
+
+    if (!optionalCategory.isPresent()) {
+      logger.error("Category is invalid");
+      throw new BadRequestException("Category is invalid");
+    }
+
+    if (!optionalBrand.isPresent()) {
+      logger.error("Brand is invalid");
+      throw new BadRequestException("Brand is invalid");
+    }
+
+    if (productDto.getPrice() < 0 || productDto.getStock() < 0) {
+      logger.error("Product stock or price is invalid");
+      throw new BadRequestException("Product stock or price is invalid");
+    }
+
+    return true;
+  }
+
+  private void validateMetaDataRequest(SearchRequest metadataRequest) {
+
+    if (metadataRequest.page < 0) {
       throw new BadRequestException("Page can not be smaller than 0");
     }
 
-    if (searchRequest.size > Constants.MAX_PAGE_SIZE) {
+    if (metadataRequest.size > Constants.MAX_PAGE_SIZE) {
       throw new BadRequestException("Size can not be > MAX");
     }
 
-    if (!searchRequest.sort.equals(Sort.Direction.DESC.name()) && !searchRequest.sort
+    if (!metadataRequest.sort.equals(Sort.Direction.DESC.name()) && !metadataRequest.sort
         .equals(Sort.Direction.ASC.name())) {
 
       throw new BadRequestException("Sort is invalid");

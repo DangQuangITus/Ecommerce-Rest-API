@@ -2,10 +2,6 @@ package com.nab.ecommerce.controller.customer;
 
 import com.nab.ecommerce.dto.product.ProductDto;
 import com.nab.ecommerce.payload.response.PagedResponse;
-import com.nab.ecommerce.repositories.UserProfileRepository;
-import com.nab.ecommerce.security.CurrentUser;
-import com.nab.ecommerce.security.UserPrincipal;
-import com.nab.ecommerce.services.CategoryService;
 import com.nab.ecommerce.services.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,29 +19,18 @@ public class CustomerProductControllers {
 
   @Autowired
   ProductService productService;
-  @Autowired
-  CategoryService categoryService;
 
-  @Autowired
-  private UserProfileRepository userRepository;
+  @GetMapping("")
+  public PagedResponse<ProductDto> listProduct(@RequestBody ProductDto productDto) {
 
-  @GetMapping()
-  public PagedResponse<ProductDto> listProduct(@CurrentUser UserPrincipal userPrincipal,
-      @RequestBody ProductDto productDto) {
-
-    PagedResponse<ProductDto> list = productService.listProducts(userPrincipal, productDto);
-
-    return list;
+    return productService.listProducts(productDto);
   }
 
-
   @GetMapping("/search")
-  public PagedResponse<ProductDto> searchProduct(@CurrentUser UserPrincipal userPrincipal,
-      @RequestBody ProductDto productDto) {
+  public PagedResponse<ProductDto> searchProduct(@RequestBody ProductDto productDto) {
 
-    PagedResponse<ProductDto> list = productService.searchProducts(userPrincipal, productDto);
+    return productService.searchProducts(productDto);
 
-    return list;
   }
 
 }

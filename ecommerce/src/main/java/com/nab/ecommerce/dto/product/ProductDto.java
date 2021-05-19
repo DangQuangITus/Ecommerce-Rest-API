@@ -1,6 +1,7 @@
 package com.nab.ecommerce.dto.product;
 
-import com.nab.ecommerce.models.Product;
+import com.nab.ecommerce.models.product.Product;
+import com.nab.ecommerce.models.product.ProductStatus;
 import com.nab.ecommerce.payload.request.SearchRequest;
 import javax.validation.constraints.NotNull;
 
@@ -9,12 +10,14 @@ public class ProductDto {
   private Integer id;
   private @NotNull String name;
   private @NotNull double price;
+  private @NotNull long stock;
   private @NotNull String description;
   private @NotNull String color;
   private @NotNull Integer categoryId;
   private @NotNull Integer brandId;
+  private ProductStatus productStatus;
 
-  public SearchRequest searchRequest;
+  public SearchRequest metadataRequest;
 
   public ProductDto(Product product) {
     this.setId(product.getId());
@@ -22,15 +25,17 @@ public class ProductDto {
     this.setDescription(product.getDescription());
     this.setColor(product.getColor());
     this.setPrice(product.getPrice());
+    this.setStock(product.getStock());
     this.setCategoryId(product.getCategory().getId());
     this.setBrandId(product.getBrand().getId());
   }
 
-  public ProductDto(@NotNull String name, @NotNull double price, @NotNull String description,
+  public ProductDto(@NotNull String name, @NotNull double price,@NotNull long stock, @NotNull String description,
       @NotNull String color, @NotNull Integer categoryId, @NotNull Integer brandId) {
 
     this.name = name;
     this.price = price;
+    this.stock = stock;
     this.description = description;
     this.color = color;
     this.categoryId = categoryId;
@@ -38,6 +43,22 @@ public class ProductDto {
   }
 
   public ProductDto() {
+  }
+
+  public long getStock() {
+    return stock;
+  }
+
+  public void setStock(long stock) {
+    this.stock = stock;
+  }
+
+  public ProductStatus getProductStatus() {
+    return productStatus;
+  }
+
+  public void setProductStatus(ProductStatus productStatus) {
+    this.productStatus = productStatus;
   }
 
   public Integer getId() {

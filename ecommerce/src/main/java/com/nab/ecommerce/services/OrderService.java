@@ -1,15 +1,18 @@
 package com.nab.ecommerce.services;
 
-import com.nab.ecommerce.dto.cart.CartDto;
-import com.nab.ecommerce.dto.cart.CartItemDto;
 import com.nab.ecommerce.dto.order.OrderDto;
-import com.nab.ecommerce.dto.order.PlaceOrderDto;
-import com.nab.ecommerce.models.Order;
-import com.nab.ecommerce.models.OrderItem;
+import com.nab.ecommerce.dto.order.OrderItemsDto;
+import com.nab.ecommerce.exception.BadRequestException;
+import com.nab.ecommerce.exception.ProductNotExistException;
+import com.nab.ecommerce.exception.ProductOutOfStockException;
+import com.nab.ecommerce.models.order.Order;
+import com.nab.ecommerce.models.product.Product;
 import com.nab.ecommerce.models.user.User;
 import com.nab.ecommerce.repositories.OrderRepository;
+import com.nab.ecommerce.repositories.ProductStatusRepository;
 import com.nab.ecommerce.repositories.UserRepository;
 import com.nab.ecommerce.security.UserPrincipal;
+import java.util.Collections;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,54 +25,71 @@ public class OrderService {
 
   @Autowired
   private OrderRepository orderRepository;
-
   @Autowired
-  private CartService cartService;
-
+  private ProductService productService;
   @Autowired
   UserRepository userRepository;
   @Autowired
   OrderItemsService orderItemsService;
+  @Autowired
+  ProductStatusRepository productStatusRepository;
 
-
-  public Order saveOrder(PlaceOrderDto orderDto, User user) {
+  public Order saveOrder(OrderDto orderDto, User user) {
     Order order = getOrderFromDto(orderDto, user);
+    user.setOrders(Collections.singletonList(order));
+    userRepository.save(user);
     return orderRepository.save(order);
   }
 
-  private Order getOrderFromDto(PlaceOrderDto orderDto, User user) {
+  private Order getOrderFromDto(OrderDto orderDto, User user) {
     Order order = new Order(orderDto, user);
     return order;
   }
 
-  private User getUserInfoFromOrderReq(OrderDto orderDto, User user) {
+  public Order placeOrder(OrderDto orderDto, UserPrincipal userPrincipal) {
 
+    if (orderDto.getOrderItemsDtos() == null || orderDto.getOrderItemsDtos().isEmpty()) {
+      throw new BadRequestException("Request Data invalid: order items is empty.");
+    }
+    List<OrderItemsDto> itemsDtos = orderDto.getOrderItemsDtos();
+
+    try {
+      validateOrderItems(itemsDtos);
+    } catch (BadRequestException | ProductNotExistException | ProductOutOfStockException e) {
+      throw e;
+    }
+    User user = getUserFromDto(orderDto);
+    return saveOrder(orderDto, user);
+  }
+
+  public User getUserFromDto(OrderDto orderDto) {
+    User user = new User();
+    user.setAddress(orderDto.getAddress());
     user.setEmail(orderDto.getEmail());
     user.setPhone(orderDto.getPhone());
-    user.setAddress(orderDto.getAddress());
+    user.setFullName(orderDto.getFullName());
     return user;
   }
 
-  public void placeOrder(UserPrincipal user, OrderDto orderDto) {
-    CartDto cartDto = cartService.listCartItems(user);
-    User user1 = userRepository.findByUsername(user.getUsername()).get();
-    user1 = getUserInfoFromOrderReq(orderDto, user1);
-    PlaceOrderDto placeOrderDto = new PlaceOrderDto();
-    placeOrderDto.setUser(user1);
-    placeOrderDto.setTotalPrice(cartDto.getTotalCost());
+  private void validateOrderItems(List<OrderItemsDto> itemsDtos) {
 
-    Order newOrder = saveOrder(placeOrderDto, user1);
+    for (OrderItemsDto item : itemsDtos) {
 
-    List<CartItemDto> cartItemDtoList = cartDto.getcartItems();
-    for (CartItemDto cartItemDto : cartItemDtoList) {
-      OrderItem orderItem = new OrderItem(
-          newOrder,
-          cartItemDto.getProduct(),
-          cartItemDto.getQuantity(),
-          cartItemDto.getProduct().getPrice());
-      orderItemsService.addOrderedProducts(orderItem);
+      if (item.getProductId() < 0) {
+        throw new BadRequestException("Request Data invalid.");
+      }
+
+      try {
+        Product product = productService.getProductById(item.getProductId());
+        if (product.getStock() < item.getQuantity()) {
+          throw new ProductOutOfStockException(product.getName());
+        }
+      } catch (ProductNotExistException e) {
+        throw new ProductNotExistException("Product not found");
+      }
+
     }
-    cartService.deleteUserCartItems(user);
+
   }
 
 }

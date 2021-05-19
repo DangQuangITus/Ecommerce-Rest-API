@@ -1,13 +1,15 @@
 package com.nab.ecommerce.controller.admin;
 
 import com.nab.ecommerce.dto.product.ProductDto;
+import com.nab.ecommerce.exception.BadRequestException;
+import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;
 import com.nab.ecommerce.models.Category;
+import com.nab.ecommerce.models.product.Product;
 import com.nab.ecommerce.payload.response.ApiResponse;
 import com.nab.ecommerce.services.BrandService;
 import com.nab.ecommerce.services.CategoryService;
 import com.nab.ecommerce.services.ProductService;
-import java.util.Optional;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,25 +40,28 @@ public class AdminProductControllers {
   @PreAuthorize(value = "hasRole('ADMIN')")
   public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody ProductDto productDto) {
 
-    Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
-    Optional<Brand> optionalBrand = brandService.readBrand(productDto.getBrandId());
+    try {
 
-    if (!optionalCategory.isPresent()) {
-      logger.error("category is invalid");
-      return new ResponseEntity<>(new ApiResponse(false, "category is invalid"), HttpStatus.CONFLICT);
+      try {
+        productService.validateProductDto(productDto);
+      } catch (BadRequestException e) {
+        return new ResponseEntity<>(new ApiResponse(false, "Add Product failed, validate request error."),
+            HttpStatus.BAD_REQUEST);
+      }
+
+      Brand brand = brandService.readBrand(productDto.getBrandId()).get();
+      Category category = categoryService.readCategory(productDto.getCategoryId()).get();
+      Product product = productService.addProduct(productDto, category, brand);
+
+      return new ResponseEntity<>(
+          new ApiResponse(true, String.format("Product has been added with id %s", product.getId())),
+          HttpStatus.CREATED);
+
+    } catch (Exception e) {
+      logger.error(String.format("Add product error: %s", e.getMessage()));
+      return new ResponseEntity<>(new ApiResponse(false, String.format("Add Product exception: %s", e.getMessage())),
+          HttpStatus.BAD_REQUEST);
     }
-
-    if (!optionalBrand.isPresent()) {
-      logger.error("brand is invalid");
-      return new ResponseEntity<>(new ApiResponse(false, "brand is invalid"), HttpStatus.CONFLICT);
-    }
-
-    Brand brand = optionalBrand.get();
-    Category category = optionalCategory.get();
-
-    productService.addProduct(productDto, category, brand);
-
-    return new ResponseEntity<>(new ApiResponse(true, "Product has been added"), HttpStatus.CREATED);
   }
 
   @PostMapping("/update/{productID}")
@@ -64,13 +69,16 @@ public class AdminProductControllers {
   public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productID") Integer productID,
       @RequestBody @Valid ProductDto productDto) {
 
-    Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
-    if (!optionalCategory.isPresent()) {
-      return new ResponseEntity<>(new ApiResponse(false, "category is invalid"), HttpStatus.CONFLICT);
+    try {
+      productService.validateProductDto(productDto);
+    } catch (BadRequestException e) {
+      return new ResponseEntity<>(new ApiResponse(false, "Update Product failed, validate request error."),
+          HttpStatus.BAD_REQUEST);
     }
-    Category category = optionalCategory.get();
+    Brand brand = brandService.readBrand(productDto.getBrandId()).get();
+    Category category = categoryService.readCategory(productDto.getCategoryId()).get();
 
-    productService.updateProduct(productID, productDto, category);
+    productService.updateProduct(productID, productDto, category, brand);
 
     return new ResponseEntity<>(new ApiResponse(true, "Product has been updated"), HttpStatus.OK);
   }
@@ -78,17 +86,15 @@ public class AdminProductControllers {
 
   @PostMapping("/delete/{productID}")
   @PreAuthorize(value = "hasRole('ADMIN')")
-  public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("productID") Integer productID,
-      @RequestBody @Valid ProductDto productDto) {
+  public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("productID") Integer productID) {
 
-    Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
-    if (!optionalCategory.isPresent()) {
-      return new ResponseEntity<>(new ApiResponse(false, "category is invalid"), HttpStatus.CONFLICT);
+    try {
+
+      productService.deleteProduct(productID);
+      return new ResponseEntity<>(new ApiResponse(true, "Product has been deleted"), HttpStatus.OK);
+    } catch (ProductNotExistException ex) {
+      return new ResponseEntity<>(new ApiResponse(false, "Product delete fail, error: product not found."),
+          HttpStatus.BAD_REQUEST);
     }
-    Category category = optionalCategory.get();
-
-    productService.updateProduct(productID, productDto, category);
-
-    return new ResponseEntity<>(new ApiResponse(true, "Product has been updated"), HttpStatus.OK);
   }
 }

@@ -8,8 +8,6 @@ Back-end: https://github.com/DangQuangITus/Ecommerce-Rest-API
 
 > <b>cd</b> ```Ecommerce-Rest-API/```
 
-> <b> git checkout develop </b>
-
 <p>This is a Maven Project. Ensure, Maven is installed on your system.</p>
 <p>It is Recommended that you use Linux Based OS.</p>
 
@@ -64,9 +62,7 @@ Handle JWT token and Current User
 #### Init data
 <p>Insert example data, admin user account, product, category...</p>
 
-> curl --location --request POST 'http://localhost:9001/api/admin/init' \
-   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTMiLCJpYXQiOjE2MjEzMDkwODYsImV4cCI6MTYyMTkxMzg4Nn0.5-G5yRTAoNWBRMlNkmVFd8OZcob4hHds7KPoUHmNWCY'
-
+> curl --location --request POST 'http://localhost:9001/api/admin/init'
 #### Register new user
 <p>Signup a new account</p>
 
@@ -94,12 +90,13 @@ Handle JWT token and Current User
 <p>API for admin to add new product </p>
 
 > curl --location --request POST 'http://localhost:9001/api/admin/product/add' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTMiLCJpYXQiOjE2MjEzMjI5NDMsImV4cCI6MTYyMTkyNzc0M30.PDO0cuHZk4horcgOV1d29GM8WdfqJRYKZFE817K6vmk' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxNDQ1MDQyLCJleHAiOjE2MjIwNDk4NDJ9.9PkZ_hh-eGFOlqFyuFNK-KA-RlnHuxikNmzwjTu7QPI' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 "name": "Cam",
-"price": "1500",
+"price": 1500,
 "description": "Cam ne",
+"stock": 1000,
 "color": "orange",
 "categoryId": "1",
 "brandId": "1"
@@ -108,12 +105,13 @@ Handle JWT token and Current User
 
 #### API for admin update/delete product
 > curl --location --request POST 'http://localhost:9001/api/admin/product/update/1' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzYwMTA2LCJleHAiOjE2MjE5NjQ5MDZ9.Od0gvDVQZTpQXnRhIcg7XvssM38sa3ZlXuCpJrVOv1I' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxNDQ1MDQyLCJleHAiOjE2MjIwNDk4NDJ9.9PkZ_hh-eGFOlqFyuFNK-KA-RlnHuxikNmzwjTu7QPI' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 "name": "Cam",
-"price": "1500",
+"price": 1500,
 "description": "Cam ne",
+"stock": 1000,
 "color": "orange",
 "categoryId": "1",
 "brandId": "1"
@@ -121,10 +119,9 @@ Handle JWT token and Current User
 
 #### API for customer get all product
 > curl --location --request GET 'http://localhost:9001/api/product' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-"searchRequest": {
+"metadataRequest": {
 "page" : "0",
 "size" : "10",
 "sort" : "ASC",
@@ -134,12 +131,11 @@ Handle JWT token and Current User
 
 #### API for customer search product
 >curl --location --request GET 'http://localhost:9001/api/product/search' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 "price" : 1500,
 "name": "Cam",
-"searchRequest": {
+"metadataRequest": {
 "page" : "0",
 "size" : "10",
 "sort" : "ASC",
@@ -148,13 +144,23 @@ Handle JWT token and Current User
 }'
 #### API for customer order cart
 
->curl --location --request POST 'http://localhost:9001/api/order/add' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjIxMzU5Mzg3LCJleHAiOjE2MjE5NjQxODd9.6at_38uvEHuTsQxgaY_Cx1fPAFKuC0vxyHLF0fqTnVY' \
+> curl --location --request POST 'http://localhost:9001/api/order/create' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "fullName" : "Dang Quang",
     "email" : "DangQuang@gmail.com",
     "phone" : "0395423567",
-    "address" : "123 Nguyen Trai"
+    "address" : "123 Nguyen Trai",
+    "orderItemsDtos": [
+        {
+            "price": 1200,
+            "quantity": 10,
+            "productId": 1
+        },
+         {
+            "price": 1400,
+            "quantity": 10,
+            "productId": 1
+        }
+    ]
 }'
-
