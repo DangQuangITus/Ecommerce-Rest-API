@@ -34,7 +34,7 @@ Back-end: https://github.com/DangQuangITus/Ecommerce-Rest-API
 - Spring Boot
 
 ### Project Hierarchy
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 #### config 
 Configure Spring security to restrict access to protected resources.
@@ -42,9 +42,6 @@ Configure Role-based Authorization to protect resources on the server.
 
 #### controller
 REST API for admins and customers
-
-#### dto 
-Main business request entity
 
 #### exception
 Handle specials exception

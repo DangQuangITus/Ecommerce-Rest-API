@@ -15,14 +15,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 
 @SpringBootTest
 @TestPropertySource(locations = "/application.yml")
-class AdminProductControllersTest {
+public class AdminProductControllersTest {
 
   ProductDto productDto;
 

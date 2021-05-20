@@ -1,11 +1,11 @@
 package com.nab.ecommerce.controller.admin;
 
-import com.nab.ecommerce.payload.product.ProductDto;
 import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;
 import com.nab.ecommerce.models.Category;
 import com.nab.ecommerce.models.product.Product;
+import com.nab.ecommerce.payload.product.ProductDto;
 import com.nab.ecommerce.payload.response.ApiResponse;
 import com.nab.ecommerce.services.BrandService;
 import com.nab.ecommerce.services.CategoryService;
