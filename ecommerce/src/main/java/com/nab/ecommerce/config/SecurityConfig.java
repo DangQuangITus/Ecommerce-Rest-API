@@ -1,11 +1,11 @@
 package com.nab.ecommerce.config;
 
 
-import com.nab.ecommerce.enums.RoleName;
 import com.nab.ecommerce.security.CustomUserDetailsService;
 import com.nab.ecommerce.security.JWTAuthenticationFilter;
 import com.nab.ecommerce.security.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -55,8 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/api/admin/init", "/api/product/**", "/api/order/create",
-        "/nab-ecommerce-api/h2", "/h2");
+    web.ignoring().antMatchers("/api/admin/init", "/api/product/**", "/api/order/create");
+    web.ignoring().antMatchers(HttpMethod.GET, "/h2");
   }
 
   @Override
@@ -72,11 +72,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .roles("ADMIN");
   }
 
+  @Autowired
+  private H2ConsoleProperties console;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+
+    String path = this.console.getPath();
+    String antPattern = (path.endsWith("/") ? path + "**" : path + "/**");
+
+    HttpSecurity h2Console = http.antMatcher(antPattern);
+    h2Console.csrf().disable();
+    h2Console.httpBasic();
+    h2Console.headers().frameOptions().sameOrigin();
+    // config as you like
+
     http
         .cors()
+        .and()
+        .antMatcher(antPattern)
+        .csrf().disable()
+        .httpBasic()
+        .and()
+        .headers().frameOptions().sameOrigin()
         .and()
         .csrf()
         .disable()
@@ -87,8 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeRequests()
-        .antMatchers("/",
-            "/favicon.ico",
+        .antMatchers("/favicon.ico",
             "/**/*.png",
             "/**/*.gif",
             "/**/*.svg",
@@ -97,14 +114,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/**/*.css",
             "/**/*.js")
         .permitAll()
-        .antMatchers("/api/auth/**")
+        .antMatchers("/api/auth/**", "/api/admin/**")
         .permitAll()
         .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
         .permitAll()
         .antMatchers(HttpMethod.GET, "/api/cart/**", "/api/users/**")
-        .permitAll()
-        .anyRequest()
-        .authenticated();
+        .permitAll();
+//        .anyRequest()
+//        .authenticated();
+
+    // config as you like
+//    http.authorizeRequests().anyRequest().permitAll();
 
     // Add our custom JWT security filter
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

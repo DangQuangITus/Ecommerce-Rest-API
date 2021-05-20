@@ -33,9 +33,18 @@ class AdminInitDataControllersTest {
   }
 
   @Test
-  void initData() {
+  void initData_success() {
     controllers.initData();
     Assertions.assertTrue(userRepository.existsByUsername("admin"));
   }
+
+  void initData_InsertRole() {
+
+    controllers.initData();
+    Assertions.assertTrue(userRepository.existsByUsername("admin"));
+  }
+
+
+
 
 }

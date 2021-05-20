@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -24,7 +26,6 @@ import org.hibernate.annotations.NaturalId;
         @UniqueConstraint(columnNames = "email")
     })
 public class User extends DateAudit {
-
 
   public User() {
   }
@@ -52,8 +53,10 @@ public class User extends DateAudit {
   String email;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "user",
-      fetch = FetchType.LAZY)
+  @JoinTable(name = "user_orders",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "order_id"))
+  @OneToMany(fetch = FetchType.LAZY)
   private List<Order> orders;
 
   public User(@NotBlank @Size(max = 40) String username, @NotBlank @Email @Size(max = 40) String email,

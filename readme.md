@@ -24,6 +24,12 @@ Back-end: https://github.com/DangQuangITus/Ecommerce-Rest-API
 
 > mvn clean install -DskipTests && java -jar target/ecommerce-0.0.1-SNAPSHOT.jar --spring.config.location=./conf/application.yml
 
+```Note: H2 Database: ```
+<p>username: <b>admin</b> </p>
+<p>password: </p>
+
+> http://localhost:9000/h2/ 
+
 
 ### The MEAN Stack
 - Knowledge in Core Java 

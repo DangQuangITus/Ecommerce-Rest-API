@@ -1,5 +1,6 @@
 package com.nab.ecommerce.security;
 
+import com.nab.ecommerce.exception.AuthoException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -43,9 +45,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+      } else {
+        throw new AuthoException("NON_AUTHORITATIVE_INFORMATION");
       }
-    } catch (Exception e) {
-      logger.error("token invalidate: " + e.getMessage());
+    } catch (Exception ex) {
+      logger.error("token invalidate: " + ex.getMessage());
     }
     filterChain.doFilter(httpServletRequest, httpServletResponse);
 

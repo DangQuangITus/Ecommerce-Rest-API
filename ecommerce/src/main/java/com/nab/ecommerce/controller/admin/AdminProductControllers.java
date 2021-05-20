@@ -1,5 +1,6 @@
 package com.nab.ecommerce.controller.admin;
 
+import com.nab.ecommerce.exception.AuthoException;
 import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;
@@ -10,6 +11,7 @@ import com.nab.ecommerce.payload.response.ApiResponse;
 import com.nab.ecommerce.services.BrandService;
 import com.nab.ecommerce.services.CategoryService;
 import com.nab.ecommerce.services.ProductService;
+import java.io.IOException;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,9 @@ public class AdminProductControllers {
           new ApiResponse(true, String.format("Product has been added with id %s", product.getId())),
           HttpStatus.CREATED);
 
+    } catch (AuthoException e) {
+      return new ResponseEntity<>(new ApiResponse(false, String.format("Add Product exception: %s", e.getMessage())),
+          HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     } catch (Exception e) {
       logger.error(String.format("Add product error: %s", e.getMessage()));
       return new ResponseEntity<>(new ApiResponse(false, String.format("Add Product exception: %s", e.getMessage())),
