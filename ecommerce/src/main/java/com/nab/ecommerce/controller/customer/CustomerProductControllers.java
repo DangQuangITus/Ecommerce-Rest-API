@@ -1,6 +1,6 @@
 package com.nab.ecommerce.controller.customer;
 
-import com.nab.ecommerce.dto.product.ProductDto;
+import com.nab.ecommerce.payload.product.ProductDto;
 import com.nab.ecommerce.payload.response.PagedResponse;
 import com.nab.ecommerce.services.ProductService;
 import org.slf4j.Logger;

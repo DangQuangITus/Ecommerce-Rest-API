@@ -1,6 +1,6 @@
 package com.nab.ecommerce.controller.admin;
 
-import com.nab.ecommerce.dto.product.ProductDto;
+import com.nab.ecommerce.payload.product.ProductDto;
 import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;

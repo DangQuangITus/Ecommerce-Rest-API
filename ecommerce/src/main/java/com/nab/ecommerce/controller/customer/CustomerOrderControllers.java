@@ -1,6 +1,6 @@
 package com.nab.ecommerce.controller.customer;
 
-import com.nab.ecommerce.dto.order.OrderDto;
+import com.nab.ecommerce.payload.order.OrderDto;
 import com.nab.ecommerce.payload.response.ApiResponse;
 import com.nab.ecommerce.repositories.UserProfileRepository;
 import com.nab.ecommerce.security.CurrentUser;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

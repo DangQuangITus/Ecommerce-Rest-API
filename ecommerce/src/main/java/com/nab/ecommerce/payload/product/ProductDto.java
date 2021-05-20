@@ -1,4 +1,4 @@
-package com.nab.ecommerce.dto.product;
+package com.nab.ecommerce.payload.product;
 
 import com.nab.ecommerce.models.product.Product;
 import com.nab.ecommerce.models.product.ProductStatus;
@@ -30,7 +30,7 @@ public class ProductDto {
     this.setBrandId(product.getBrand().getId());
   }
 
-  public ProductDto(@NotNull String name, @NotNull double price,@NotNull long stock, @NotNull String description,
+  public ProductDto(@NotNull String name, @NotNull double price, @NotNull long stock, @NotNull String description,
       @NotNull String color, @NotNull Integer categoryId, @NotNull Integer brandId) {
 
     this.name = name;

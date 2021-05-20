@@ -46,6 +46,7 @@ public class AdminInitDataControllers {
     if (!roleRepository.findByName(RoleName.ROLE_ADMIN).isPresent()) {
       roleRepository.save(new Role(RoleName.ROLE_ADMIN));
     }
+
     if (!roleRepository.findByName(RoleName.ROLE_USER).isPresent()) {
       roleRepository.save(new Role(RoleName.ROLE_USER));
     }

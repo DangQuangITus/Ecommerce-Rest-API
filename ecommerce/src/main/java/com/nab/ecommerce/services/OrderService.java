@@ -1,7 +1,7 @@
 package com.nab.ecommerce.services;
 
-import com.nab.ecommerce.dto.order.OrderDto;
-import com.nab.ecommerce.dto.order.OrderItemsDto;
+import com.nab.ecommerce.payload.order.OrderDto;
+import com.nab.ecommerce.payload.order.OrderItemsDto;
 import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.exception.ProductOutOfStockException;

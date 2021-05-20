@@ -1,4 +1,4 @@
-package com.nab.ecommerce.dto.cart;
+package com.nab.ecommerce.payload.cart;
 
 import javax.validation.constraints.NotNull;
 

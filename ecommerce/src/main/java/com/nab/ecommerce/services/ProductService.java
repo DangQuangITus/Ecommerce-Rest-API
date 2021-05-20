@@ -1,7 +1,7 @@
 package com.nab.ecommerce.services;
 
 import com.nab.ecommerce.contants.Constants;
-import com.nab.ecommerce.dto.product.ProductDto;
+import com.nab.ecommerce.payload.product.ProductDto;
 import com.nab.ecommerce.exception.BadRequestException;
 import com.nab.ecommerce.exception.ProductNotExistException;
 import com.nab.ecommerce.models.Brand;
@@ -12,7 +12,6 @@ import com.nab.ecommerce.payload.request.SearchRequest;
 import com.nab.ecommerce.payload.response.PagedResponse;
 import com.nab.ecommerce.repositories.ProductRepository;
 import com.nab.ecommerce.repositories.ProductStatusRepository;
-import com.nab.ecommerce.security.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

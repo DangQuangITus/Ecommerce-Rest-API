@@ -1,6 +1,7 @@
 package com.nab.ecommerce.config;
 
 
+import com.nab.ecommerce.enums.RoleName;
 import com.nab.ecommerce.security.CustomUserDetailsService;
 import com.nab.ecommerce.security.JWTAuthenticationFilter;
 import com.nab.ecommerce.security.JwtAuthenticationEntryPoint;
@@ -55,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   public void configure(WebSecurity web) throws Exception {
     web.ignoring().antMatchers("/api/admin/init", "/api/product/**", "/api/order/create",
-        "/nab-ecommerce-api/h2","/h2");
+        "/nab-ecommerce-api/h2", "/h2");
   }
 
   @Override
@@ -63,7 +64,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     authenticationManagerBuilder
         .userDetailsService(customUserDetailsService)
         .passwordEncoder(passwordEncoder());
+
+    authenticationManagerBuilder.inMemoryAuthentication()
+        .passwordEncoder(passwordEncoder())
+        .withUser("admin")
+        .password(passwordEncoder().encode("admin"))
+        .roles("ADMIN");
   }
+
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

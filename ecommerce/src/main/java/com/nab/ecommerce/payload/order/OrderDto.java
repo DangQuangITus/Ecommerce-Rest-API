@@ -1,4 +1,4 @@
-package com.nab.ecommerce.dto.order;
+package com.nab.ecommerce.payload.order;
 
 import com.nab.ecommerce.models.order.Order;
 import java.util.List;

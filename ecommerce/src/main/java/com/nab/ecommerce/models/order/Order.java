@@ -1,7 +1,7 @@
 package com.nab.ecommerce.models.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nab.ecommerce.dto.order.OrderDto;
+import com.nab.ecommerce.payload.order.OrderDto;
 import com.nab.ecommerce.models.audit.UserDateAudit;
 import com.nab.ecommerce.models.user.User;
 import java.util.List;
