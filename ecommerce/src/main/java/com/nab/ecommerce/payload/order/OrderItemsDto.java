@@ -1,5 +1,6 @@
 package com.nab.ecommerce.payload.order;
 
+import com.nab.ecommerce.models.order.OrderItem;
 import javax.validation.constraints.NotNull;
 
 public class OrderItemsDto {
@@ -10,6 +11,13 @@ public class OrderItemsDto {
 
   public OrderItemsDto() {
   }
+
+  public OrderItemsDto(OrderItem orderItem) {
+    this.setPrice(orderItem.getPrice());
+    this.setQuantity(orderItem.getQuantity());
+    this.setProductId(orderItem.getProductId());
+  }
+
 
   public OrderItemsDto(@NotNull double price, @NotNull int quantity, @NotNull int productId) {
     this.price = price;

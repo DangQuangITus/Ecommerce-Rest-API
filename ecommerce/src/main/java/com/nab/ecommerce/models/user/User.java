@@ -34,7 +34,6 @@ public class User extends DateAudit {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank
   @Size(max = 40)
   private String username;
 
@@ -44,12 +43,12 @@ public class User extends DateAudit {
   @Size(max = 11)
   private String phone;
 
+  @Size(max = 100)
   private String address;
 
   @NaturalId
-  @NotBlank
   @Email
-  @Size(max = 40)
+  @Size(max = 50)
   String email;
 
   @JsonIgnore

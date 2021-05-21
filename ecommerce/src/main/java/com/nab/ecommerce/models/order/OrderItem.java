@@ -1,14 +1,13 @@
 package com.nab.ecommerce.models.order;
 
 import com.nab.ecommerce.models.audit.DateAudit;
-import com.nab.ecommerce.models.product.Product;
+import com.nab.ecommerce.payload.order.OrderItemsDto;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -21,39 +20,57 @@ public class OrderItem extends DateAudit {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "quantity")
   private @NotNull int quantity;
 
-  @Column(name = "price")
   private @NotNull double price;
 
-
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "order_id", referencedColumnName = "id")
   private Order order;
 
-  @OneToOne
-  @JoinColumn(name = "product_id", referencedColumnName = "id")
-  private Product product;
+  @Column(name = "product_id")
+  private Integer productId;
 
   public OrderItem() {
   }
 
-  public OrderItem(Order order, @NotNull Product product, @NotNull int quantity, @NotNull double price) {
-    this.product = product;
+
+  public OrderItem(OrderItemsDto itemsDto) {
+    this.productId = itemsDto.getProductId();
+    this.quantity = itemsDto.getQuantity();
+    this.price = itemsDto.getPrice();
+  }
+
+  public OrderItem(Order order, @NotNull Integer productId, @NotNull int quantity, @NotNull double price) {
+    this.productId = productId;
     this.quantity = quantity;
     this.price = price;
     this.order = order;
   }
 
-  public Product getProduct() {
-    return product;
+  public Integer getId() {
+    return id;
   }
 
-  public void setProduct(Product product) {
-    this.product = product;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
+  public Order getOrder() {
+    return order;
+  }
+
+  public void setOrder(Order order) {
+    this.order = order;
+  }
+
+  public Integer getProductId() {
+    return productId;
+  }
+
+  public void setProductId(Integer productId) {
+    this.productId = productId;
+  }
 
   public int getQuantity() {
     return quantity;

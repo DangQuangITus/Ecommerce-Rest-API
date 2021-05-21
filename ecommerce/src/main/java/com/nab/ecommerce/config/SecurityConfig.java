@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/api/admin/init", "/api/product/**", "/api/order/create");
+    web.ignoring().antMatchers("/api/admin/init/**", "/api/product/**", "/api/order/**");
     web.ignoring().antMatchers(HttpMethod.GET, "/h2");
   }
 
@@ -114,14 +114,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/**/*.css",
             "/**/*.js")
         .permitAll()
-        .antMatchers("/api/auth/**", "/api/admin/**")
+        .antMatchers("/api/auth/**", "/h2/**","/api/admin/init")
         .permitAll()
-        .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
-        .permitAll()
-        .antMatchers(HttpMethod.GET, "/api/cart/**", "/api/users/**")
-        .permitAll();
-//        .anyRequest()
-//        .authenticated();
+        .antMatchers("/api/admin/product/**")
+        .authenticated();
 
     // config as you like
 //    http.authorizeRequests().anyRequest().permitAll();

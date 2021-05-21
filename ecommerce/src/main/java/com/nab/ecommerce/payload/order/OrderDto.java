@@ -1,10 +1,14 @@
 package com.nab.ecommerce.payload.order;
 
+import com.nab.ecommerce.common.BaseEntity;
 import com.nab.ecommerce.models.order.Order;
+import com.nab.ecommerce.models.order.OrderItem;
+import com.nab.ecommerce.models.user.User;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
-public class OrderDto {
+public class OrderDto extends BaseEntity {
 
   private Integer id;
   private Long userId;
@@ -18,9 +22,19 @@ public class OrderDto {
   public OrderDto() {
   }
 
-  public OrderDto(Order order) {
+  public OrderDto(Order order, User user) {
+    orderItemsDtos = new ArrayList<>();
     this.setId(order.getId());
-    this.setUserId(order.getCreatedBy());
+    this.setUserId(order.getUserId());
+    this.setFullName(user.getFullName());
+    this.setEmail(user.getEmail());
+    this.setPhone(user.getPhone());
+    this.setAddress(order.getAddress());
+
+    for (OrderItem item : order.getOrderItems()) {
+      this.getOrderItemsDtos().add(new OrderItemsDto(item));
+    }
+
   }
 
   public List<OrderItemsDto> getOrderItemsDtos() {

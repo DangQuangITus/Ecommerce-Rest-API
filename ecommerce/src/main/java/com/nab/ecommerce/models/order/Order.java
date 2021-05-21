@@ -1,9 +1,11 @@
 package com.nab.ecommerce.models.order;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nab.ecommerce.payload.order.OrderDto;
+import com.nab.ecommerce.models.audit.DateAudit;
 import com.nab.ecommerce.models.audit.UserDateAudit;
 import com.nab.ecommerce.models.user.User;
+import com.nab.ecommerce.payload.order.OrderDto;
+import com.nab.ecommerce.payload.order.OrderItemsDto;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,14 +13,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "orders")
-public class Order extends UserDateAudit {
+public class Order extends DateAudit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,22 +30,33 @@ public class Order extends UserDateAudit {
   @Column(name = "address")
   private String address;
 
+  @Column(name = "user_id")
+  private long userId;
+
+
   @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
   private List<OrderItem> orderItems;
 
-  @ManyToOne()
-  @JsonIgnore
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
+  public Order(OrderDto orderDto, User user) {
+    orderItems = new ArrayList<>();
+    this.address = this.getAddress();
+    this.totalPrice = orderDto.getTotalPrices();
+    this.userId = user.getId();
+    for (OrderItemsDto itemsDto : orderDto.getOrderItemsDtos()) {
+      this.orderItems.add(new OrderItem(itemsDto));
+    }
+
+  }
 
   public Order() {
   }
 
+  public long getUserId() {
+    return userId;
+  }
 
-  public Order(OrderDto orderDto, User user) {
-    this.user = user;
-    this.address = user.getAddress();
-    this.totalPrice = orderDto.getTotalPrices();
+  public void setUserId(long userId) {
+    this.userId = userId;
   }
 
   public List<OrderItem> getOrderItems() {
@@ -80,11 +91,4 @@ public class Order extends UserDateAudit {
     this.totalPrice = totalPrice;
   }
 
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
 }

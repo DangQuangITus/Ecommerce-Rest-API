@@ -1,6 +1,10 @@
 package com.nab.ecommerce.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nab.ecommerce.contants.Constants;
 import com.nab.ecommerce.exception.AuthoException;
+import com.nab.ecommerce.payload.response.ApiResponse;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -34,7 +37,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     try {
       String token = getJwtFromRequest(httpServletRequest);
-      if (StringUtils.isNotEmpty(token) && jwtTokenProvider.validateToken(token)) {
+      if (StringUtils.isNotEmpty(token) && jwtTokenProvider.validateToken(token)
+//          || httpServletRequest.getRequestURL().equals(Constants.INIT_DATA)
+      ) {
 
         long userId = jwtTokenProvider.getUserIdFromToken(token);
 
@@ -44,15 +49,25 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-      } else {
-        throw new AuthoException("NON_AUTHORITATIVE_INFORMATION");
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
       }
+      filterChain.doFilter(httpServletRequest, httpServletResponse);
+
     } catch (Exception ex) {
       logger.error("token invalidate: " + ex.getMessage());
+      ApiResponse response = new ApiResponse(false, ex.getMessage());
+      httpServletResponse.setStatus(HttpServletResponse.SC_NON_AUTHORITATIVE_INFORMATION);
+      httpServletResponse.getWriter().write(convertObjectToJson(response));
     }
-    filterChain.doFilter(httpServletRequest, httpServletResponse);
 
+  }
+
+  public String convertObjectToJson(Object object) throws JsonProcessingException {
+    if (object == null) {
+      return null;
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.writeValueAsString(object);
   }
 
   private String getJwtFromRequest(HttpServletRequest request) {
@@ -62,6 +77,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
       return bearerToken.substring(7);
     }
 
-    return null;
+    return "";
   }
 }
