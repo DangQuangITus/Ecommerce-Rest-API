@@ -24,9 +24,8 @@ public class OrderItem extends DateAudit {
 
   private @NotNull double price;
 
-  @OneToOne
-  @JoinColumn(name = "order_id", referencedColumnName = "id")
-  private Order order;
+  @Column(name = "order_id")
+  private Integer orderId;
 
   @Column(name = "product_id")
   private Integer productId;
@@ -41,11 +40,11 @@ public class OrderItem extends DateAudit {
     this.price = itemsDto.getPrice();
   }
 
-  public OrderItem(Order order, @NotNull Integer productId, @NotNull int quantity, @NotNull double price) {
+  public OrderItem(Integer orderId, @NotNull Integer productId, @NotNull int quantity, @NotNull double price) {
     this.productId = productId;
     this.quantity = quantity;
     this.price = price;
-    this.order = order;
+    this.orderId = orderId;
   }
 
   public Integer getId() {
@@ -54,14 +53,6 @@ public class OrderItem extends DateAudit {
 
   public void setId(Integer id) {
     this.id = id;
-  }
-
-  public Order getOrder() {
-    return order;
-  }
-
-  public void setOrder(Order order) {
-    this.order = order;
   }
 
   public Integer getProductId() {

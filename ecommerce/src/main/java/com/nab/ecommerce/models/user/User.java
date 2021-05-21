@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nab.ecommerce.models.order.Order;
 import com.nab.ecommerce.models.audit.DateAudit;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,11 +21,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.NaturalId;
 
 @Entity
-@Table(name = "users",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-    })
+@Table(name = "users")
 public class User extends DateAudit {
 
   public User() {
@@ -46,16 +43,13 @@ public class User extends DateAudit {
   @Size(max = 100)
   private String address;
 
-  @NaturalId
   @Email
   @Size(max = 50)
   String email;
 
   @JsonIgnore
-  @JoinTable(name = "user_orders",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "order_id"))
   @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   private List<Order> orders;
 
   public User(@NotBlank @Size(max = 40) String username, @NotBlank @Email @Size(max = 40) String email,

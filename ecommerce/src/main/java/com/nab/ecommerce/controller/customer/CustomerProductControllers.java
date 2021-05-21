@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/product")
+@RequestMapping("/api/product")
 public class CustomerProductControllers {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomerProductControllers.class);

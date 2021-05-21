@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/order")
+@RequestMapping("/api/order")
 public class CustomerOrderControllers {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomerOrderControllers.class);
@@ -37,10 +37,18 @@ public class CustomerOrderControllers {
 
 
   @PostMapping("/create")
-  public ResponseEntity<ApiResponse> placeOrder(@Valid @RequestBody OrderDto orderDto, @CurrentUser UserPrincipal user) {
+  public ResponseEntity<ApiResponse> placeOrder(@Valid @RequestBody OrderDto orderDto,
+      @CurrentUser UserPrincipal user) {
 
-    orderService.placeOrder(orderDto, user);
-    return new ResponseEntity<>(new ApiResponse(true, "Order has been placed"), HttpStatus.CREATED);
+    try {
+      orderService.placeOrder(orderDto, user);
+      return new ResponseEntity<>(new ApiResponse(true, "Order has been placed"), HttpStatus.CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>(
+          new ApiResponse(false, String.format("Order has been failed, error=%s", e.getMessage())), HttpStatus.CREATED);
+    }
+
+
   }
 
 }

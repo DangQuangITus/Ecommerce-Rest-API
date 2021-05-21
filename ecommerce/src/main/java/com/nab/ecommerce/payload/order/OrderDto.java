@@ -4,6 +4,7 @@ import com.nab.ecommerce.common.BaseEntity;
 import com.nab.ecommerce.models.order.Order;
 import com.nab.ecommerce.models.order.OrderItem;
 import com.nab.ecommerce.models.user.User;
+import com.nab.ecommerce.utils.GsonUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -30,8 +31,8 @@ public class OrderDto extends BaseEntity {
     this.setEmail(user.getEmail());
     this.setPhone(user.getPhone());
     this.setAddress(order.getAddress());
-
-    for (OrderItem item : order.getOrderItems()) {
+    List<OrderItem> list = GsonUtil.fromJsonString(order.getOrderItemsJson(), ArrayList.class);
+    for (OrderItem item : list) {
       this.getOrderItemsDtos().add(new OrderItemsDto(item));
     }
 

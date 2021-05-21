@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ProductOutOfStockException extends RuntimeException {
 
   public ProductOutOfStockException(String message) {
-    super(message);
+    super(String.format("Product is out of stock: %s", message));
   }
 
   public ProductOutOfStockException(String message, Throwable cause) {
